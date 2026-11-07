@@ -1,43 +1,97 @@
-# Atherosclerosis Transcriptomics
-
-![Project cover](project_cover.png)
+# Functional Enrichment And Network-Based Re-Analysis of Differentially Expressed Genes in Atherosclerosis: A Bioinformatics Extension of Yan et al. (2022)
 
 ## Overview
 
-This project examines gene expression differences between atheroma plaque and paired macroscopically intact carotid tissue using the public GSE43292 dataset.
+This project reproduces and extends the atherosclerosis analysis reported by Yan et al. (2022), using the public GSE43292 microarray dataset.
 
-I developed this reanalysis from my MSc coursework in Network and Pathway Analysis.
+I completed this work during my MSc course in Network and Pathway Analysis. The project combines paired differential expression analysis with complementary enrichment approaches and network analysis to investigate molecular processes associated with atherosclerotic plaque.
+
+## Aim
+
+The project aimed to compare differential expression and network findings with the original study, then extend the analysis through:
+
+- Gene Set Enrichment Analysis (GSEA) of the full ranked gene list.
+- Overrepresentation analysis (ORA) of significant differentially expressed genes.
+- Hub gene ranking using both Degree and Maximal Clique Centrality (MCC).
+- Functional enrichment of network-derived clusters and hub gene modules.
+
+These analyses examine disease-associated processes at the gene, pathway, and network levels.
 
 ## Dataset
 
-GSE43292 contains 64 samples from 32 patients. Each patient contributed one plaque sample and one macroscopically intact tissue sample.
+| Feature | Description |
+|---|---|
+| GEO accession | GSE43292 |
+| Platform | GPL6244 |
+| Patients | 32 hypertensive patients |
+| Samples | 32 atheroma plaque and 32 paired macroscopically intact tissue samples |
+| Tissue source | Carotid endarterectomy |
+| Expression data | Supplied RMA-normalised microarray matrix |
 
-## Analysis
+The workflow applies no additional normalisation.
 
-The analysis includes:
+## Analysis workflow
 
-- Paired differential expression analysis with limma
-- Gene Ontology and KEGG pathway enrichment
-- Gene set enrichment analysis
-- Protein interaction network analysis using STRING and Cytoscape
-- Network ranking using cytoHubba
+### 1. Differential expression
 
-The differential expression thresholds were a Benjamini–Hochberg adjusted p-value below 0.01 and an absolute log2 fold change above 1.
+GEOquery imports the expression data into R. limma fits a paired model accounting for patient identity and compares plaque against intact tissue.
 
-## Project files
+Selection requires a Benjamini–Hochberg adjusted p-value below 0.01 and an absolute log2 fold change above 1.
 
-- [Case study](Atherosclerosis_Case_Study.pdf): project overview and findings
-- [Methods](METHODS.md): analysis details
-- [Figures](figures/): visual summaries
-- [Tables](tables/): exported results
+Probe annotation and removal of missing or duplicate gene symbols produce the gene list for downstream analysis.
 
-## Code
+### 2. Functional enrichment
 
-This repository currently contains the project report and results. Analysis scripts and instructions for running them are not yet included.
+clusterProfiler performs two complementary analyses:
+
+- GSEA evaluates GO terms and KEGG pathways across the full gene list ranked by log2 fold change.
+- ORA evaluates GO terms and KEGG pathways within the cleaned significant gene list.
+
+GO analysis includes Biological Process, Molecular Function, and Cellular Component.
+
+### 3. Network construction and clustering
+
+STRING, accessed through stringApp in Cytoscape, constructs a functional association network from genes with higher expression in plaque, using a confidence threshold of 0.4.
+
+The MCODE algorithm in clusterMaker2 identifies densely connected network clusters.
+
+### 4. Hub gene ranking and module enrichment
+
+CytoHubba ranks the top ten nodes using Degree and MCC.
+
+STRING functional enrichment examines the full network, the leading MCODE cluster, and the Degree and MCC modules using GO, KEGG, WikiPathways, and Reactome.
+
+## Main findings
+
+- Differential expression analysis identified 147 significant probe sets, compared with 134 DEGs reported in the original study. Annotation and cleaning yielded 114 unique genes.
+- GSEA highlighted immune-associated processes, including adaptive immune response and leukocyte-mediated immunity.
+- ORA highlighted complement activation, humoral immune response, and pathways including PPAR signalling and tryptophan metabolism.
+- The leading MCODE cluster contained CHI3L1, CD163, MMP7, CXCL10, CD36, DPP4, ANPEP, and MME.
+- Degree and MCC rankings shared nine genes: ITGAX, CCR1, IL1RN, CXCL10, CD163, MMP9, MMP12, SELE, and CD36.
+- Enrichment of the MCC module highlighted the fluid shear stress and atherosclerosis pathway, including SELE, HMOX1, and MMP9.
+
+The findings connect immune activity with lipid metabolism, extracellular matrix remodelling, and vascular inflammatory processes.
+
+## Tools
+
+R, GEOquery, limma, clusterProfiler, hugene10sttranscriptcluster.db, org.Hs.eg.db, EnhancedVolcano, pheatmap, enrichplot, STRING, and Cytoscape.
+
+Network analysis uses stringApp, clusterMaker2, and CytoHubba.
+
+## Repository contents
+
+| Location | Contents |
+|---|---|
+| [METHODS.md](METHODS.md) | Detailed analysis methods |
+| [tables/](tables/) | Original enrichment results and network rankings |
+| [figures/](figures/) | Analysis visualisations |
+| [Atherosclerosis_Case_Study.pdf](Atherosclerosis_Case_Study.pdf) | Portfolio case study |
 
 ## Interpretation
 
-This observational reanalysis explores molecular differences associated with atherosclerotic plaque. It does not establish causal mechanisms or validate clinical biomarkers.
+This project examines associations within one observational microarray dataset. Macroscopically intact tissue does not represent healthy-donor tissue.
+
+The network analysis focuses on genes with higher expression in plaque. The findings identify candidates for further investigation rather than experimentally validated biomarkers or therapeutic targets.
 
 ## Data source
 
@@ -45,4 +99,7 @@ This observational reanalysis explores molecular differences associated with ath
 
 ## Author
 
-Jane Ezeanowai
+Jane Chidimma Ezeanowai
+
+MSc Systems Biology with a specialisation in Bioinformatics  
+University of Skövde
