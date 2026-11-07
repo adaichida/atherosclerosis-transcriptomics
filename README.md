@@ -27,7 +27,7 @@ The differential expression thresholds were a Benjamini–Hochberg adjusted p-va
 ## Project files
 
 - [Case study](Atherosclerosis_Case_Study.pdf): project overview and findings
-- [Methods](METHODS.txt): analysis details
+- [Methods](METHODS.md): analysis details
 - [Figures](figures/): visual summaries
 - [Tables](tables/): exported results
 
