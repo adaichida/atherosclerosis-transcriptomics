@@ -86,7 +86,7 @@ Network analysis uses stringApp, clusterMaker2, and CytoHubba.
 | [tables/](tables/) | Original enrichment results and network rankings |
 | [figures/](figures/) | Analysis visualisations |
 | [code/](code/) | R scripts for differential expression, GSEA, ORA, and visualisation |
-| [CODE_SETUP.md](CODE_SETUP.md) | Dependencies, input files, and instructions for running the scripts |
+| [CODE_SETUP.md](CODE_SETUP.md) | Packages, input files, and instructions for running the scripts |
 
 ## Interpretation
 
