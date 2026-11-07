@@ -1,5 +1,3 @@
-# Methods
-
 ## Dataset
 
 The analysis uses the GSE43292 microarray dataset from NCBI GEO, generated on the GPL6244 platform.
