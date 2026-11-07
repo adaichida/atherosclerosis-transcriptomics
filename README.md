@@ -85,7 +85,8 @@ Network analysis uses stringApp, clusterMaker2, and CytoHubba.
 | [METHODS.md](METHODS.md) | Detailed analysis methods |
 | [tables/](tables/) | Original enrichment results and network rankings |
 | [figures/](figures/) | Analysis visualisations |
-| [Atherosclerosis_Case_Study.pdf](Atherosclerosis_Case_Study.pdf) | Portfolio case study |
+| [code/](code/) | R scripts for differential expression, GSEA, ORA, and visualisation |
+| [CODE_SETUP.md](CODE_SETUP.md) | Dependencies, input files, and instructions for running the scripts |
 
 ## Interpretation
 
