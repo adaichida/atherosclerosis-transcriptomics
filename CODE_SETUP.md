@@ -1,47 +1,98 @@
-# Running the original R analysis
+# Running the Analysis
 
-## Prepare the project
+## Requirements
 
-Copy the code folder into the root of your repository. Create a data folder there and place GSE43292_series_matrix.txt.gz inside it. Use your supplied GEO matrix. GPL6244.soft.gz is not required by these scripts.
+- R and RStudio
+- Internet access for package installation and queries
+- The GSE43292 series matrix file
 
-Open an R session with the repository root as its working directory. For example, create an RStudio project in that folder. Do not run from inside code/.
+## Project setup
 
-## Install dependencies once
+Download or clone this repository.
 
-```r
-if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-BiocManager::install(c("GEOquery", "limma", "statmod",
-                      "hugene10sttranscriptcluster.db", "org.Hs.eg.db",
-                      "clusterProfiler", "enrichplot", "EnhancedVolcano"))
-install.packages(c("pheatmap", "ggplot2", "png", "gridExtra"))
+Create a `data` folder in the repository root and place `GSE43292_series_matrix.txt.gz` inside it. Keep the file compressed.
+
+The scripts expect this structure:
+
+```text
+atherosclerosis-transcriptomics/
+├── code/
+│   ├── setup.R
+│   ├── DEG_Analysis.R
+│   ├── GSEA_Full_Analysis.R
+│   └── ORA_DEG_Analysis.R
+├── data/
+│   └── GSE43292_series_matrix.txt.gz
+├── figures/
+├── tables/
+├── CODE_SETUP.md
+├── METHODS.md
+└── README.md
 ```
 
-## Run in order
+Open RStudio with the repository root as the working directory.
+
+## Dependencies
+
+Install the required packages before running the analysis:
+
+```r
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+
+BiocManager::install(c(
+  "GEOquery",
+  "limma",
+  "statmod",
+  "hugene10sttranscriptcluster.db",
+  "org.Hs.eg.db",
+  "clusterProfiler",
+  "enrichplot",
+  "EnhancedVolcano"
+))
+
+install.packages(c(
+  "pheatmap",
+  "ggplot2",
+  "png",
+  "gridExtra"
+))
+```
+
+## Run order
+
+Run the scripts from the repository root in this order:
 
 ```r
 source("code/DEG_Analysis.R")
-source("code/DEG_Analysis_2.R")
 source("code/GSEA_Full_Analysis.R")
 source("code/ORA_DEG_Analysis.R")
 ```
 
-Each script creates results/ if needed. Intermediate tables and explicitly saved figures go there. Interactive volcano, heatmap, and ORA plots appear in the R graphics device; export them manually if needed. Running the scripts again overwrites their output files.
+| Script | Purpose |
+|---|---|
+| `DEG_Analysis.R` | Fits the paired limma model, annotates results, exports gene lists, and creates the volcano plot and heatmap |
+| `GSEA_Full_Analysis.R` | Runs GO and KEGG GSEA using the full ranked gene list |
+| `ORA_DEG_Analysis.R` | Runs GO and KEGG ORA using the cleaned significant gene list |
+| `setup.R` | Checks the project folders and creates the output directory |
 
-The heatmap script repeats the model fit before plotting. The original heatmap selection takes 12 probe rows and then removes missing symbols; its title says top 10. This preparation preserves that selection logic rather than changing the analysis.
+Each analysis script loads `setup.R` automatically.
 
-## Edits to the supplied scripts
+## Outputs
 
-- Removed the personal working-directory setting and duplicate GEO download alternatives.
-- Used one local input path: data/GSE43292_series_matrix.txt.gz.
-- Standardised the full ranked table filename across the producer and GSEA script.
-- Directed intermediate tables and saved plots to results/.
-- Removed the package installation command from the analysis script.
-- Removed row.names = 1 when ORA imports Cleaned_DEGs.txt, because the producing script writes that file without row names.
+The scripts write intermediate gene lists, enrichment tables, and exported plots to `results/`.
 
-The preparation retains the paired design, thresholds, annotation rules, enrichment calls, heatmap selection, and original plotting labels. The scripts still assign pairs from sample order, so use the supplied matrix without reordering columns. Plot labels that say Normal refer to macroscopically intact tissue, not healthy donors.
+The volcano plot, heatmap, and ORA plots appear in the R graphics device. Export these separately to save image files.
 
-The GSEA script requires live KEGG access and does not set a random seed. Annotation updates, package versions, and stochastic estimation may change results. This package does not freeze the original software environment.
+Rerunning the scripts overwrites output files with matching names. The `tables/` and `figures/` folders contain the results shared in this repository.
 
-## Validation
+## Data and execution details
 
-File-path and producer/consumer checks completed. The R workflow has not run in this environment because R is unavailable. These prepared scripts do not generate the later portfolio summary figures or perform the Cytoscape network analysis. The original Cytoscape workflow remains separate.
+Use the expression matrix in its original sample order. The paired model assigns patient pairs from consecutive sample columns.
+
+The heatmap selects the 12 significant probe rows with the largest absolute log2 fold changes, then removes entries without gene symbols.
+
+The enrichment scripts use installed annotation packages and online KEGG resources. Results may vary with package versions and database updates. The GSEA script does not set a random seed.
+
+The R scripts do not perform the STRING and Cytoscape network analyses. See [METHODS.md](METHODS.md) for that workflow.
